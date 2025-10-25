@@ -131,10 +131,7 @@ bot.on("text", async (ctx) => {
   }
 });
 
-
-import express from "express";
-
-// --- Запуск: webhook (если есть WEBHOOK_DOMAIN), иначе polling ---
+// --- Запуск: webhook 
 const WEBHOOK_DOMAIN = process.env.WEBHOOK_DOMAIN; // пример: https://di-translator-bot.onrender.com
 const PORT = process.env.PORT || 3000;
 

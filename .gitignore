@@ -1,0 +1,13 @@
+node_modules
+.env
+# зависимости
+node_modules/
+
+# переменные окружения
+.env
+
+# логи npm
+npm-debug.log*
+
+# служебные файлы macOS
+.DS_Store

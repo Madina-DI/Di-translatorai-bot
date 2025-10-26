@@ -144,30 +144,33 @@ const PORT = process.env.PORT || 3000;
 
       // Секретный путь, чтобы нельзя было «подобрать» адрес
       const secretPath = `/bot${process.env.BOT_TOKEN}`; 
+        // Явно регистрируем ровно этот путь как POST-хук
+      app.post(secretPath, (req, res) => {
+        // важно: передаём res — Telegraf сам ответит 200
+        bot.handleUpdate(req.body, res);
+      });
 
-      // Регистрируем обработчик вебхука у Express
-      app.use(bot.webhookCallback(secretPath));
-
-      // Говорим Telegram слать апдейты на наш публичный URL
-      await bot.telegram.setWebhook(`${WEBHOOK_DOMAIN}${secretPath}`);
-
-      // Простой healthcheck (для Render)
+      // health-check для Render
       app.get("/", (_, res) => res.status(200).send("OK"));
 
-      app.listen(PORT, () => {
-        console.log(`✅ Webhook mode: listening on ${PORT}`);
-        console.log(`🌐 Set webhook to: ${WEBHOOK_DOMAIN}${secretPath}`);
-      });
+
+      // Сообщаем Telegram куда слать апдейты
+      await bot.telegram.setWebhook(`${WEBHOOK_DOMAIN}${secretPath}`);
+      console.log(`🌐 Webhook set to: ${WEBHOOK_DOMAIN}${secretPath}`);
+
+      app.listen(PORT, () =>
+        console.log(`✅ Webhook mode is listening on ${PORT}`)
+      );
     } else {
-      // Режим POLLING (локальная разработка)
+      // локально
       await bot.telegram.deleteWebhook({ drop_pending_updates: true });
       await bot.launch();
-      console.log("✅ Polling mode started:", new Date().toLocaleString());
+      console.log("✅ Polling mode:", new Date().toLocaleString());
     }
-  } catch (e) {
-    console.error("🚫 Ошибка запуска:", e.message);
-  }
-})();
+      } catch (e) {
+        console.error("🚫 Ошибка запуска:", e.message);
+      }
+    })();
 
 process.once("SIGINT", () => bot.stop("SIGINT"));
 process.once("SIGTERM", () => bot.stop("SIGTERM"));

@@ -146,11 +146,11 @@ const PORT = process.env.PORT || 3000;
       const secretPath = `/bot${process.env.BOT_TOKEN}`; 
 
       // Регистрируем обработчик вебхука у Express
-      app.use(secretPath, bot.webhookCallback(secretPath));
+      app.use(bot.webhookCallback(secretPath));
 
       // Говорим Telegram слать апдейты на наш публичный URL
       await bot.telegram.setWebhook(`${WEBHOOK_DOMAIN}${secretPath}`);
-      
+
       // Простой healthcheck (для Render)
       app.get("/", (_, res) => res.status(200).send("OK"));
 
